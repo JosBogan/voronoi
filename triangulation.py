@@ -60,7 +60,9 @@ class DoublyLinkedList:
 
     def traverse_list(self):
         c = self.start_node
-        while c is not None:
+        print(c.data)
+        c = c.nref
+        while c.nref is not self.start_node:
             print(c.data)
             c = c.nref
     
@@ -80,10 +82,15 @@ class DoublyLinkedList:
         steps += 1
         return steps
     
-    def remove_item(self, item)
+    def remove_item(self, item):
+        if item == self.start_node:
+            self.start_node = self.start_node.nref
         c = item
         c.pref.nref = c.nref
         c.nref.pref = c.pref
+
+    
+
     
 polygon_linked_list = DoublyLinkedList()
 
@@ -166,20 +173,29 @@ def check_is_dog_ear(triangle):
 
 # check_is_dog_ear(polygon_linked_list.start_node)
 
-def triangulate(polygon, steps=None):
-    if steps == None:
-        steps = polygon.calculate_length()
-    if steps == 3:
+def triangulate(polygon, verts=None):
+    verts = polygon.calculate_length()
+    if verts == 3:
         return
 
+    print(verts)
     current_vertex = polygon.start_node
-    print(check_is_dog_ear(current_vertex))
+    if check_is_dog_ear(current_vertex):
+        if_dog_ear(current_vertex, polygon)
+        verts -= 1
     current_vertex = current_vertex.nref
-    while current_vertex != polygon.start_node:
-        if steps == 3:
-            return
-        print(check_is_dog_ear(current_vertex))
+    while verts > 3:
+        if check_is_dog_ear(current_vertex):
+            if_dog_ear(current_vertex, polygon)
+            verts -= 1
         current_vertex = current_vertex.nref
+
+    print(verts)
+
+def if_dog_ear(triangle, polygon):
+    print(triangle.data, 'is dog ear')
+    polygon.remove_item(triangle)
+    # polygon.traverse_list()
 
 
     # while steps 
@@ -190,6 +206,8 @@ def triangulate(polygon, steps=None):
     
 # triangulate(polygon_linked_list_bad)
 triangulate(polygon_linked_list)
+
+print(polygon_linked_list.traverse_list())
 
 
 

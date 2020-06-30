@@ -16,8 +16,7 @@ weighted_list_of_triangles = [
 test_Triangle = [[1, 1], [1, 5], [4, 1]]
 
 test_polygon = [[1, 1], [2, 5], [1, 7], [6, 8], [9, 7], [6, 6], [8, 6], [4, 2]]
-
-test_point = [2.2, 2]
+test_polygon_bad = [[3, 1], [1, 5], [3, 2], [5, 5]]
 
 class Node:
     def __init__(self, data):
@@ -71,6 +70,15 @@ class DoublyLinkedList:
             c = c.nref
         c.nref = self.start_node
         self.start_node.pref = c
+
+    def calculate_length(self):
+        c = self.start_node
+        steps = 0
+        while c is not self.start_node.pref:
+            steps += 1
+            c = c.nref
+        steps += 1
+        return steps
     
 polygon_linked_list = DoublyLinkedList()
 
@@ -83,6 +91,19 @@ for x in range(len(test_polygon)):
 # polygon_linked_list.traverse_list()
 
 polygon_linked_list.circularize()
+
+# ! TEST FOR ERRORS
+
+polygon_linked_list_bad = DoublyLinkedList()
+
+polygon_linked_list_bad.insert_in_emptylist([3, 1])
+
+for x in range(len(test_polygon_bad)):
+    if x != 0:
+        polygon_linked_list_bad.insert_at_end(test_polygon_bad[x].copy())
+
+polygon_linked_list_bad.circularize()
+
 
 def random_point(triangle):
 
@@ -136,19 +157,46 @@ def check_point(point, triangle):
         return True
     return False
 
-def check_dog_ear(triangle, polygon):
+def check_is_dog_ear(triangle):
+    # print(triangle.data)
+    determinate = (triangle.data[0] - triangle.pref.data[0]) * (triangle.nref.data[1] - triangle.data[1]) - (triangle.nref.data[0] - triangle.data[0]) * (triangle.data[1] - triangle.pref.data[1])
+    if determinate > 0:
+        return False
+    # (b.x - a.x) * (c.y - b.y) - (c.x - b.x) * (b.y - a.y) > 0
     current_point = triangle
     while current_point != triangle.pref:
         if current_point is not triangle and current_point is not triangle.nref:
             if check_point(current_point, triangle):
-                print('Inside')
+                return False
             else:
-                print('Outside')
+                return True
             print(current_point.data)
         current_point = current_point.nref
 
-check_dog_ear(polygon_linked_list.start_node, polygon_linked_list)
+# check_is_dog_ear(polygon_linked_list.start_node)
+
+def triangulate(polygon):
+    # steps = polygon.calculate_length()
+    print('triangulation in process')
+
+    current_vertex = polygon.start_node
+    while current_vertex != polygon.start_node.pref:
+        print(check_is_dog_ear(current_vertex))
+        current_vertex = current_vertex.nref
+    # while steps 
+    # while the polygon steps is greater than 3
+    # loop through the pollygon, to check if each triangle is a dog ear
+    # if it is a dog ear remove it from the linked list and join together 
+    # also create a new data structure with all of the vertexes and edges
+    
+triangulate(polygon_linked_list_bad)
+triangulate(polygon_linked_list)
+
+
+
 # random_point([[0, 1], [0, 5], [4, 2]])
+
+
 
 # polygon = Doubly_connected_edge_list()
 # polygon_linked_list = Doubly_linked_list()

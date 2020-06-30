@@ -80,6 +80,11 @@ class DoublyLinkedList:
         steps += 1
         return steps
     
+    def remove_item(self, item)
+        c = item
+        c.pref.nref = c.nref
+        c.nref.pref = c.pref
+    
 polygon_linked_list = DoublyLinkedList()
 
 polygon_linked_list.insert_in_emptylist([1, 1])
@@ -133,20 +138,6 @@ def calculate_triangle_area(triangle):
 
 def check_point(point, triangle):
 
-    # ? If what is coming is a List (OLD METHOD)
-    # if type(triangle) is list:
-    #     print('it is a list')
-    #     triangle_area = calculate_triangle_area(triangle)
-    #     triangle_a_area = calculate_triangle_area([point, triangle[0], triangle[1]])
-    #     triangle_b_area = calculate_triangle_area([point, triangle[1], triangle[2]])
-    #     triangle_c_area = calculate_triangle_area([point, triangle[0], triangle[2]])
-
-    #     check = triangle_a_area + triangle_b_area + triangle_c_area
-
-    #     if check == triangle_area: 
-    #         return True
-    #     return False
-
     # ? If what is coming is a dictionary 
     triangle_area = calculate_triangle_area([triangle.data, triangle.nref.data, triangle.pref.data])
     triangle_a_area = calculate_triangle_area([point.data, triangle.data, triangle.nref.data])
@@ -175,21 +166,29 @@ def check_is_dog_ear(triangle):
 
 # check_is_dog_ear(polygon_linked_list.start_node)
 
-def triangulate(polygon):
-    # steps = polygon.calculate_length()
-    print('triangulation in process')
+def triangulate(polygon, steps=None):
+    if steps == None:
+        steps = polygon.calculate_length()
+    if steps == 3:
+        return
 
     current_vertex = polygon.start_node
-    while current_vertex != polygon.start_node.pref:
+    print(check_is_dog_ear(current_vertex))
+    current_vertex = current_vertex.nref
+    while current_vertex != polygon.start_node:
+        if steps == 3:
+            return
         print(check_is_dog_ear(current_vertex))
         current_vertex = current_vertex.nref
+
+
     # while steps 
     # while the polygon steps is greater than 3
     # loop through the pollygon, to check if each triangle is a dog ear
     # if it is a dog ear remove it from the linked list and join together 
     # also create a new data structure with all of the vertexes and edges
     
-triangulate(polygon_linked_list_bad)
+# triangulate(polygon_linked_list_bad)
 triangulate(polygon_linked_list)
 
 

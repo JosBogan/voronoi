@@ -1,16 +1,8 @@
 import random
 
-list_of_triangles = [
-    {
-        'coords': [],
-        'size': 1,
-        'weight': 1
-    },
-]
+from decomposed_data_struct import DecompDataStruct, Vertex, Triangle
 
-weighted_list_of_triangles = [
-
-]
+from doubly_linked_list import Node, DoublyLinkedList
 
 
 test_Triangle = [[1, 1], [1, 5], [4, 1]]
@@ -18,80 +10,8 @@ test_Triangle = [[1, 1], [1, 5], [4, 1]]
 test_polygon = [[1, 1], [2, 5], [1, 7], [6, 8], [9, 7], [6, 6], [8, 6], [4, 2]]
 test_polygon_bad = [[3, 1], [1, 5], [3, 2], [5, 5]]
 
-class Node:
-    def __init__(self, data):
-        self.pref = None
-        self.data = data
-        self.nref = None
 
-class DoublyLinkedList:
-    def __init__(self):
-        self.start_node = None
-
-    def insert_in_emptylist(self, data):
-        if self.start_node is None:
-            new_node = Node(data)
-            self.start_node = new_node
-        else:
-            print("list is not empty")
-    
-    def insert_at_start(self, data):
-        if self.start_node is None:
-            new_node = Node(data)
-            self.start_node = new_node
-            print("node inserted")
-            return
-        new_node = Node(data)
-        new_node.nref = self.start_node
-        self.start_node.pref = new_node
-        self.start_node = new_node
-
-    def insert_at_end(self, data):
-        if self.start_node is None:
-            new_node = Node(data)
-            self.start_node = new_node
-            return
-        n = self.start_node
-        while n.nref is not None:
-            n = n.nref
-        new_node = Node(data)
-        n.nref = new_node
-        new_node.pref = n
-
-    def traverse_list(self):
-        c = self.start_node
-        print(c.data)
-        c = c.nref
-        while c.nref is not self.start_node.nref:
-            print(c.data)
-            c = c.nref
-    
-    def circularize(self):
-        c = self.start_node
-        while c.nref is not None:
-            c = c.nref
-        # print(c.data, 'is the final node')
-        c.nref = self.start_node
-        self.start_node.pref = c
-
-    def calculate_length(self):
-        c = self.start_node
-        steps = 0
-        while c is not self.start_node.pref:
-            steps += 1
-            c = c.nref
-        steps += 1
-        return steps
-    
-    def remove_item(self, item):
-        if item == self.start_node:
-            self.start_node = self.start_node.nref
-        c = item
-        c.pref.nref = c.nref
-        c.nref.pref = c.pref
-
-    
-
+# ? Creating the doubly linked list for triangulation
     
 polygon_linked_list = DoublyLinkedList()
 
@@ -101,24 +21,18 @@ for x in range(len(test_polygon)):
     if x != 0:
         polygon_linked_list.insert_at_end(test_polygon[x].copy())
 
-# polygon_linked_list.traverse_list()
-
 polygon_linked_list.circularize()
 
 # polygon_linked_list.traverse_list()
 
+# ? Storing the triangluated polygon in a anew data structure
 
-# ! TEST FOR ERRORS
+triangulated_polygon = DecompDataStruct()
 
-# polygon_linked_list_bad = DoublyLinkedList()
+for x in range(len(test_polygon)):
+    triangulated_polygon.add_new_vert(test_polygon[x].copy())
 
-# polygon_linked_list_bad.insert_in_emptylist([3, 1])
-
-# for x in range(len(test_polygon_bad)):
-#     if x != 0:
-#         polygon_linked_list_bad.insert_at_end(test_polygon_bad[x].copy())
-
-# polygon_linked_list_bad.circularize()
+# print(triangulated_polygon.verts)
 
 
 def random_point(triangle):
@@ -182,57 +96,48 @@ def triangulate(polygon, verts=None):
     if verts <= 3:
         return
 
-    # print(verts)
     current_vertex = polygon.start_node
     if check_is_dog_ear(current_vertex):
         if_dog_ear(current_vertex, polygon)
         verts -= 1
-    else:
-        print(current_vertex.data, 'is not a dog ear')
+
+    # else:
+    #     print(current_vertex.data, 'is not a dog ear')
     current_vertex = current_vertex.nref
-    # while current_vertex != polygon.start_node:
+
     while verts > 3:
         if check_is_dog_ear(current_vertex):
             if_dog_ear(current_vertex, polygon)
             verts -= 1
-        else:
-            print(current_vertex.data, 'is not a dog ear')
+        # else:
+            # print(current_vertex.data, 'is not a dog ear')
         current_vertex = current_vertex.nref
 
-    # print(verts)
+    if_dog_ear(current_vertex, polygon)
 
 def if_dog_ear(triangle, polygon):
-    print(triangle.data, 'is dog ear')
+    # print(triangle.data, 'is dog ear')
     polygon.remove_item(triangle)
-    polygon.traverse_list()
-    # polygon.traverse_list()
 
 
-    # while steps 
-    # while the polygon steps is greater than 3
-    # loop through the pollygon, to check if each triangle is a dog ear
-    # if it is a dog ear remove it from the linked list and join together 
+    # print([x.coords for x in triangulated_polygon.verts])
+    # vert_index = [triangle.data[0], triangle.data[1]] in triangulated_polygon.verts.coords
+    # print(vert_index)
+
+    vert_a = next(x for x in triangulated_polygon.verts if x.coords[0] == triangle.data[0] and x.coords[1] == triangle.data[1])
+    vert_b = next(x for x in triangulated_polygon.verts if x.coords[0] == triangle.nref.data[0] and x.coords[1] == triangle.nref.data[1])
+    vert_c = next(x for x in triangulated_polygon.verts if x.coords[0] == triangle.pref.data[0] and x.coords[1] == triangle.pref.data[1])
+
+    triangle_area = calculate_triangle_area([triangle.data, triangle.nref.data, triangle.pref.data])
+
+    # print(vert_a.coords, vert_b.coords, vert_c.coords, triangle_area)
+    triangulated_polygon.add_new_triangle(vert_a, vert_b, vert_c, triangle_area)
+
     # also create a new data structure with all of the vertexes and edges
-    
-# triangulate(polygon_linked_list_bad)
-# polygon_linked_list.traverse_list()
+
+
 triangulate(polygon_linked_list)
-print('final check')
-polygon_linked_list.traverse_list()
+# print('final check')
+# polygon_linked_list.traverse_list()
 
-
-
-# random_point([[0, 1], [0, 5], [4, 2]])
-
-
-
-# polygon = Doubly_connected_edge_list()
-# polygon_linked_list = Doubly_linked_list()
-# check_dog_ear(Doubly_linked_list().list[0], polygon_linked_list)
-
-# def choose_triangle(polygon):
-#     if polygon
-
-#     print(w1, w2)
-
-
+print(triangulated_polygon)

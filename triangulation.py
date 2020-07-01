@@ -1,4 +1,4 @@
-import random
+import random, functools
 
 from decomposed_data_struct import DecompDataStruct, Vertex, Triangle
 
@@ -63,22 +63,29 @@ def calculate_triangle_area(triangle):
 
 def check_point(point, triangle):
 
-    # ? If what is coming is a dictionary 
+    # ? If what is coming is a dictionary calculate the areas of the big triangle and each triangle that connects to the point and compare
     triangle_area = calculate_triangle_area([triangle.data, triangle.nref.data, triangle.pref.data])
+
     triangle_a_area = calculate_triangle_area([point.data, triangle.data, triangle.nref.data])
     triangle_b_area = calculate_triangle_area([point.data, triangle.nref.data, triangle.pref.data])
     triangle_c_area = calculate_triangle_area([point.data, triangle.data, triangle.pref.data])
+
     check = triangle_a_area + triangle_b_area + triangle_c_area
+
     if check == triangle_area: 
         return True
     return False
 
 def check_is_dog_ear(triangle):
-    # print(triangle.data)
+
+    # ! Find the Determinate to check if the angle is over 180
+
     determinate = (triangle.data[0] - triangle.pref.data[0]) * (triangle.nref.data[1] - triangle.data[1]) - (triangle.nref.data[0] - triangle.data[0]) * (triangle.data[1] - triangle.pref.data[1])
     if determinate > 0:
         return False
-    # (b.x - a.x) * (c.y - b.y) - (c.x - b.x) * (b.y - a.y) > 0
+
+    # ! Looping through the points to check if the input is a dog ear points (one of the other points of the polygon lies within)
+
     current_point = triangle
     while current_point != triangle.pref:
         if current_point is not triangle and current_point is not triangle.nref:
@@ -92,9 +99,12 @@ def check_is_dog_ear(triangle):
 # check_is_dog_ear(polygon_linked_list.start_node)
 
 def triangulate(polygon, verts=None):
+    # ! Initital check to see if the Polygon is a triangle and setting the while loop counter to the number of verts
     verts = polygon.calculate_length()
     if verts <= 3:
         return
+
+    # ! doing the first rotation of the while loop
 
     current_vertex = polygon.start_node
     if check_is_dog_ear(current_vertex):
@@ -115,6 +125,23 @@ def triangulate(polygon, verts=None):
 
     if_dog_ear(current_vertex, polygon)
 
+def change_weighting(decomp_polygon):
+
+    # ! Mapping the weight value of each triangle to be bound by 1
+
+    list_of_triangles = decomp_polygon.triangles
+
+    weights = [x.weight for x in list_of_triangles]
+    # print(weights)
+
+    polygon_area = functools.reduce(lambda x, y: x + y, weights)
+
+    for x in list_of_triangles:
+        x.weight = x.weight / polygon_area
+
+    # print(list_of_triangles)
+
+
 def if_dog_ear(triangle, polygon):
     # print(triangle.data, 'is dog ear')
     polygon.remove_item(triangle)
@@ -133,11 +160,10 @@ def if_dog_ear(triangle, polygon):
     # print(vert_a.coords, vert_b.coords, vert_c.coords, triangle_area)
     triangulated_polygon.add_new_triangle(vert_a, vert_b, vert_c, triangle_area)
 
-    # also create a new data structure with all of the vertexes and edges
-
 
 triangulate(polygon_linked_list)
 # print('final check')
 # polygon_linked_list.traverse_list()
 
+change_weighting(triangulated_polygon)
 print(triangulated_polygon)

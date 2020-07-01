@@ -62,7 +62,7 @@ class DoublyLinkedList:
         c = self.start_node
         print(c.data)
         c = c.nref
-        while c.nref is not self.start_node:
+        while c.nref is not self.start_node.nref:
             print(c.data)
             c = c.nref
     
@@ -70,6 +70,7 @@ class DoublyLinkedList:
         c = self.start_node
         while c.nref is not None:
             c = c.nref
+        # print(c.data, 'is the final node')
         c.nref = self.start_node
         self.start_node.pref = c
 
@@ -104,17 +105,20 @@ for x in range(len(test_polygon)):
 
 polygon_linked_list.circularize()
 
+# polygon_linked_list.traverse_list()
+
+
 # ! TEST FOR ERRORS
 
-polygon_linked_list_bad = DoublyLinkedList()
+# polygon_linked_list_bad = DoublyLinkedList()
 
-polygon_linked_list_bad.insert_in_emptylist([3, 1])
+# polygon_linked_list_bad.insert_in_emptylist([3, 1])
 
-for x in range(len(test_polygon_bad)):
-    if x != 0:
-        polygon_linked_list_bad.insert_at_end(test_polygon_bad[x].copy())
+# for x in range(len(test_polygon_bad)):
+#     if x != 0:
+#         polygon_linked_list_bad.insert_at_end(test_polygon_bad[x].copy())
 
-polygon_linked_list_bad.circularize()
+# polygon_linked_list_bad.circularize()
 
 
 def random_point(triangle):
@@ -175,26 +179,32 @@ def check_is_dog_ear(triangle):
 
 def triangulate(polygon, verts=None):
     verts = polygon.calculate_length()
-    if verts == 3:
+    if verts <= 3:
         return
 
-    print(verts)
+    # print(verts)
     current_vertex = polygon.start_node
     if check_is_dog_ear(current_vertex):
         if_dog_ear(current_vertex, polygon)
         verts -= 1
+    else:
+        print(current_vertex.data, 'is not a dog ear')
     current_vertex = current_vertex.nref
+    # while current_vertex != polygon.start_node:
     while verts > 3:
         if check_is_dog_ear(current_vertex):
             if_dog_ear(current_vertex, polygon)
             verts -= 1
+        else:
+            print(current_vertex.data, 'is not a dog ear')
         current_vertex = current_vertex.nref
 
-    print(verts)
+    # print(verts)
 
 def if_dog_ear(triangle, polygon):
     print(triangle.data, 'is dog ear')
     polygon.remove_item(triangle)
+    polygon.traverse_list()
     # polygon.traverse_list()
 
 
@@ -205,9 +215,10 @@ def if_dog_ear(triangle, polygon):
     # also create a new data structure with all of the vertexes and edges
     
 # triangulate(polygon_linked_list_bad)
+# polygon_linked_list.traverse_list()
 triangulate(polygon_linked_list)
-
-print(polygon_linked_list.traverse_list())
+print('final check')
+polygon_linked_list.traverse_list()
 
 
 

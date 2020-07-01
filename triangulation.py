@@ -13,41 +13,48 @@ test_polygon_bad = [[3, 1], [1, 5], [3, 2], [5, 5]]
 
 # ? Creating the doubly linked list for triangulation
     
-polygon_linked_list = DoublyLinkedList()
+def create_linked_list(polygon_coords_list):
+    polygon_linked_list = DoublyLinkedList()
 
-polygon_linked_list.insert_in_emptylist([1, 1])
+    polygon_linked_list.insert_in_emptylist([polygon_coords_list[0][0], polygon_coords_list[0][1]])
 
-for x in range(len(test_polygon)):
-    if x != 0:
-        polygon_linked_list.insert_at_end(test_polygon[x].copy())
+    for x in range(len(polygon_coords_list)):
+        if x != 0:
+            polygon_linked_list.insert_at_end(polygon_coords_list[x].copy())
 
-polygon_linked_list.circularize()
+    polygon_linked_list.circularize()
+
+    return polygon_linked_list
 
 # polygon_linked_list.traverse_list()
 
 # ? Storing the triangluated polygon in a anew data structure
 
-triangulated_polygon = DecompDataStruct()
+def create_triangulated_data_structure(polygon_coords_list):
 
-for x in range(len(test_polygon)):
-    triangulated_polygon.add_new_vert(test_polygon[x].copy())
+    triangulated_polygon = DecompDataStruct()
 
-# print(triangulated_polygon.verts)
+    for x in range(len(polygon_coords_list)):
+        triangulated_polygon.add_new_vert(polygon_coords_list[x].copy())
 
+    return triangulated_polygon
+
+# ! Picks a random point within the triangle
 
 def random_point(triangle):
 
     # ? Generate random number between 0 and 1
-    x = random.random()
+    w1 = random.random()
 
     # ? generate random number so that x + y <= 1
-    y = random.uniform(0, 1 - x)
+    w2 = random.uniform(0, 1 - w1)
 
     # ? plot the x as a percentage traversing down one of the sides of the triangle
-    point_1 = [abs((triangle[0][0] - triangle[1][0]) * x), abs((triangle[0][1] - triangle[1][1]) * x)]
+    point_1 = [(triangle[1][0] - triangle[0][0]) * w1, (triangle[1][1] - triangle[0][1]) * w1]
 
     # ? plot the y as a percentage traversing down one of the sides of the triangle
-    point_2 = [abs((triangle[0][0] - triangle[2][0]) * y), abs((triangle[0][1] - triangle[2][1]) * y)]
+    point_2 = [(triangle[2][0] - triangle[0][0]) * w2, (triangle[2][1] - triangle[0][1]) * w2]
+
 
     # ? Add them together to find the coordinates of the difference
     final_point = [point_1[0] + point_2[0], point_1[1] + point_2[1]]
@@ -57,9 +64,28 @@ def random_point(triangle):
 
     return final_point_in_triangle
 
+
+
+# ! Picks a random triangle
+
+def picking_random_triangle(decomp_polygon):
+    list_of_triangles = decomp_polygon.triangles
+
+    list_of_weighted_triangles = [[x] * x.weight for x in list_of_triangles]
+
+    flat_list = [item for sublist in list_of_weighted_triangles for item in sublist]
+    # print(flat_list)
+    random_number = random.randint(0, len(flat_list))
+    return flat_list[random_number - 1]
+
+
+# ! Calculates triangle area
+
 def calculate_triangle_area(triangle):
     area = triangle[0][0] * (triangle[1][1] - triangle[2][1]) + triangle[1][0] * ((triangle[2][1] - triangle[0][1])) + triangle[2][0] * ((triangle[0][1] - triangle[1][1]))
     return abs(area)
+
+# ! Checks if point is within triangle
 
 def check_point(point, triangle):
 
@@ -96,9 +122,8 @@ def check_is_dog_ear(triangle):
             print(current_point.data)
         current_point = current_point.nref
 
-# check_is_dog_ear(polygon_linked_list.start_node)
 
-def triangulate(polygon, verts=None):
+def triangulate(polygon, triangulated_polygon, verts=None):
     # ! Initital check to see if the Polygon is a triangle and setting the while loop counter to the number of verts
     verts = polygon.calculate_length()
     if verts <= 3:
@@ -108,48 +133,42 @@ def triangulate(polygon, verts=None):
 
     current_vertex = polygon.start_node
     if check_is_dog_ear(current_vertex):
-        if_dog_ear(current_vertex, polygon)
+        if_dog_ear(current_vertex, polygon, triangulated_polygon)
         verts -= 1
 
-    # else:
-    #     print(current_vertex.data, 'is not a dog ear')
     current_vertex = current_vertex.nref
 
+    # ! Looping through the verticies, each time it reaches a dog ear, it executes the function and ticks down the counter and changing the current vertex to stay within the linked list
     while verts > 3:
         if check_is_dog_ear(current_vertex):
-            if_dog_ear(current_vertex, polygon)
+            if_dog_ear(current_vertex, polygon, triangulated_polygon)
             verts -= 1
-        # else:
-            # print(current_vertex.data, 'is not a dog ear')
+
         current_vertex = current_vertex.nref
 
-    if_dog_ear(current_vertex, polygon)
-
-def change_weighting(decomp_polygon):
-
-    # ! Mapping the weight value of each triangle to be bound by 1
-
-    list_of_triangles = decomp_polygon.triangles
-
-    weights = [x.weight for x in list_of_triangles]
-    # print(weights)
-
-    polygon_area = functools.reduce(lambda x, y: x + y, weights)
-
-    for x in list_of_triangles:
-        x.weight = x.weight / polygon_area
-
-    # print(list_of_triangles)
+    if_dog_ear(current_vertex, polygon, triangulated_polygon)
 
 
-def if_dog_ear(triangle, polygon):
-    # print(triangle.data, 'is dog ear')
+# def change_weighting(decomp_polygon):
+
+#     # ! Mapping the weight value of each triangle to be bound by 1
+
+#     list_of_triangles = decomp_polygon.triangles
+
+#     weights = [x.weight for x in list_of_triangles]
+
+#     polygon_area = functools.reduce(lambda x, y: x + y, weights)
+
+#     for x in list_of_triangles:
+#         x.weight = x.weight / polygon_area
+
+
+def if_dog_ear(triangle, polygon, triangulated_polygon):
+
+    # ! Removing the vertex from the linked_list
     polygon.remove_item(triangle)
 
-
-    # print([x.coords for x in triangulated_polygon.verts])
-    # vert_index = [triangle.data[0], triangle.data[1]] in triangulated_polygon.verts.coords
-    # print(vert_index)
+    # ! Adding the triangle to the triangulated_polygon data structure
 
     vert_a = next(x for x in triangulated_polygon.verts if x.coords[0] == triangle.data[0] and x.coords[1] == triangle.data[1])
     vert_b = next(x for x in triangulated_polygon.verts if x.coords[0] == triangle.nref.data[0] and x.coords[1] == triangle.nref.data[1])
@@ -157,13 +176,46 @@ def if_dog_ear(triangle, polygon):
 
     triangle_area = calculate_triangle_area([triangle.data, triangle.nref.data, triangle.pref.data])
 
-    # print(vert_a.coords, vert_b.coords, vert_c.coords, triangle_area)
     triangulated_polygon.add_new_triangle(vert_a, vert_b, vert_c, triangle_area)
 
 
-triangulate(polygon_linked_list)
-# print('final check')
-# polygon_linked_list.traverse_list()
+def random_point_in_triangle(triangle):
 
-change_weighting(triangulated_polygon)
-print(triangulated_polygon)
+    triangle_coords = [triangle.vert_a[0].coords, triangle.vert_b[0].coords, triangle.vert_c[0].coords]
+    
+    point = random_point(triangle_coords)
+    return(point)
+    # print(point)
+
+def random_points_in_polygon(num, polygon_coords_list):
+
+    # ? Creating the data structures to hold the polgyon data
+    polygon_linked_list = create_linked_list(polygon_coords_list)
+    triangulated_polygon = create_triangulated_data_structure(polygon_coords_list)
+
+    # ? Triangulating the Polyon
+    triangulate(polygon_linked_list, triangulated_polygon)
+
+    random_points = []
+
+    # ? Picking random triangle
+    # random_point_in_triangle(picking_random_triangle(triangulated_polygon))
+
+    for _ in range(num):
+        point = random_point_in_triangle(picking_random_triangle(triangulated_polygon))
+        random_points.append(point)
+
+    print(random_points)
+
+    # ? Picking a random point
+    # random_point([])
+
+
+
+random_points_in_polygon(8, test_polygon)
+
+# random_point([[1, 5], [9, 8], [6, 1]])
+# print(picking_random_triangle(triangulated_polygon))
+
+# change_weighting(triangulated_polygon)
+# print(triangulated_polygon)

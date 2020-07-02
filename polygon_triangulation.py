@@ -198,21 +198,17 @@ def random_points_in_polygon(num, polygon_coords_list):
 
     random_points = []
 
-    # ? Picking random triangle
-    # random_point_in_triangle(picking_random_triangle(triangulated_polygon))
+    # ? Picking random point in triangle
 
     for _ in range(num):
         point = random_point_in_triangle(picking_random_triangle(triangulated_polygon))
         random_points.append(point)
 
-    print(random_points)
-
-    # ? Picking a random point
-    # random_point([])
+    # print(random_points)
+    return random_points
 
 
-
-random_points_in_polygon(8, test_polygon)
+# random_points_in_polygon(8, test_polygon)
 
 # random_point([[1, 5], [9, 8], [6, 1]])
 # print(picking_random_triangle(triangulated_polygon))

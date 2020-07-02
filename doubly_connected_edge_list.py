@@ -52,19 +52,4 @@ class DoublyConnectedEdgeList:
         new_edge = Edge(listed_vertex_a, listed_vertex_b)
         self.edges.append(new_edge)
 
-# structure = DoublyConnectedEdgeList()
-
-# for x in range(30):
-# structure.add_new_vert(2)
-# structure.add_new_vert(2)
-# structure.add_new_vert(6)
-# structure.add_new_vert(2)
-# structure.add_new_vert(3)
-
-# structure.add_new_edge('A', 'B')
-# structure.add_new_edge('A', 'C')
-# structure.add_new_edge('B', 'C')
-# structure.add_new_edge('A', 'E')
-# structure.add_new_edge('B', 'D')
-
-# print(structure)
+#  ADD IN TRIANGLES TO DATA STRUCTURE WITH CIRCUMCIRCLES

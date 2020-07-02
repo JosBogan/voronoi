@@ -16,5 +16,7 @@ def delauney_triangulation(points):
 
 points = random_points_in_polygon(4, test_polygon)
 
+#  ADD IN TRIANGLES TO DATA STRUCTURE WITH CIRCUMCIRCLES
+
 delauney_triangulation(points)
 

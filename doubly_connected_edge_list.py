@@ -4,7 +4,7 @@ class Vertex:
         self.name = name
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name} - {self.data}'
 
     __repr__ = __str__
 

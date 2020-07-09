@@ -16,28 +16,37 @@ def delauney_triangulation(points):
         else:
             structure.add_new_edge(x, 0)
     structure.add_new_triangle(0, 1, 2)
-    # print(structure.triangles)
+    # print(points)
+    print(structure.triangles)
     # ? Looping through all the remaining points, looping again through each of the triangles in the 
     for p in range(3, len(points)):
         for tri in structure.triangles:
             triangle_data = [tri.vert_a.data, tri.vert_b.data, tri.vert_c.data]
             point = points[p]
-            # print(triangle_data, point)
+            print(point, p)
             # ! Need to add the is in circumcircle condition here!
             if is_in_triangle(point, triangle_data):
-                structure.remove_triangle(tri)
-                new_vert = structure.add_new_vert(points[p])
-                # ! CURRENTLY INFINITLY LOOPING - Put this at the 
-                structure.add_new_edge(tri.vert_a.name, new_vert.name)
-                structure.add_new_edge(tri.vert_b.name, new_vert.name)
-                structure.add_new_edge(tri.vert_c.name, new_vert.name)
-                structure.add_new_triangle(tri.vert_a.name, tri.vert_b.name, new_vert.name)
-                structure.add_new_triangle(tri.vert_a.name, tri.vert_c.name, new_vert.name)
-                structure.add_new_triangle(tri.vert_c.name, tri.vert_b.name, new_vert.name)
-                print('Worked')
-                break
+                # structure.remove_triangle(tri)
+                # new_vert = structure.add_new_vert(points[p])
+                # # ! CURRENTLY INFINITLY LOOPING - Put this at the 
+                # structure.add_new_edge(tri.vert_a.name, new_vert.name)
+                # structure.add_new_edge(tri.vert_b.name, new_vert.name)
+                # structure.add_new_edge(tri.vert_c.name, new_vert.name)
+                # structure.add_new_triangle(tri.vert_a.name, tri.vert_b.name, new_vert.name)
+                # structure.add_new_triangle(tri.vert_a.name, tri.vert_c.name, new_vert.name)
+                # structure.add_new_triangle(tri.vert_c.name, tri.vert_b.name, new_vert.name)
+                print('is in triangle')
+                # ? Here the point is joined to all the verts and the old triangle is collapsed and three new triangles are made
 
-    print(structure.triangles)
+                # break
+            elif is_in_circumcircle(triangle_data, point):
+                print('is in circumcircle but not triangle')
+                # ? Here the point is joined to all the verts of the triangle and the edge that intersects with the old triangle is flipped, making a single new triangle and transforming the one already there
+            else:
+                print('point is totally external')
+                # ? Here the point is joined to the verts of the triangle it can without passing through the triange, making a single new triangle
+
+    # print(structure.triangles)
             # print(is_in_circumcircle(triangle, point))
 
 def is_in_triangle(point, triangle):
@@ -75,9 +84,18 @@ def is_in_circumcircle(triangle, point):
         return True
     return False
 
-points = random_points_in_polygon(10, test_polygon)
+# ! Actual test
 
-#  ADD IN TRIANGLES TO DATA STRUCTURE WITH CIRCUMCIRCLES
+# points = random_points_in_polygon(10, test_polygon)
 
-delauney_triangulation(points)
+# #  ADD IN TRIANGLES TO DATA STRUCTURE WITH CIRCUMCIRCLES
 
+# delauney_triangulation(points)
+
+
+# ! EASY TO VISUALISE TEST
+
+test_points = [[1, 2], [3, 4], [3, 0], [2, 2], [4, 2], [6, 7], [7, 1], [3.5, 2.5], [2.5, 1]]
+
+
+delauney_triangulation(test_points)

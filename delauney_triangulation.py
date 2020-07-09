@@ -23,6 +23,7 @@ def delauney_triangulation(points):
             triangle_data = [tri.vert_a.data, tri.vert_b.data, tri.vert_c.data]
             point = points[p]
             # print(triangle_data, point)
+            # ! Need to add the is in circumcircle condition here!
             if is_in_triangle(point, triangle_data):
                 structure.remove_triangle(tri)
                 new_vert = structure.add_new_vert(points[p])

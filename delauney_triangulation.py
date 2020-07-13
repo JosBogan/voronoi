@@ -49,6 +49,10 @@ def delauney_triangulation(points):
     # print(structure.triangles)
             # print(is_in_circumcircle(triangle, point))
 
+def find_correct_triangles(point_data):
+    
+
+
 def is_in_triangle(point, triangle):
 
     # ? If what is coming is a dictionary calculate the areas of the big triangle and each triangle that connects to the point and compare

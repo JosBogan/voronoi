@@ -51,9 +51,6 @@ function init() {
     drawShape()
     finalSegment(coords)
 
-    // ctx.moveTo(shape.coords[shape.coords.length - 1].x, shape.coords[shape.coords.length - 1].y)
-    // ctx.lineTo(coords.x, coords.y)
-    // ctx.stroke()
   }
 
   function checkIfInCircle(coords) {
@@ -65,8 +62,6 @@ function init() {
     const length = ((vector.x ** vector.x) + (vector.y ** vector.y)) ** 0.5
 
     return length < 5
-    // if (length < 5) console.log('Inside')
-
   }
 
 
@@ -81,11 +76,6 @@ function init() {
     if (shape.complete) return
     const coords = getMouseCoords(event)
 
-
-    // ctx.beginPath()
-    // ctx.arc(coords.x, coords.y, 5, 0, 2 * Math.PI,)
-    // ctx.fillStyle = 'black'
-    // ctx.fill()
     if (shape.coords.length >= 2) {
       if (checkIfInCircle(coords)) {
         shape.complete = true
@@ -97,9 +87,6 @@ function init() {
 
     drawShape()
 
-    // if (shape.complete === false) {
-
-    // }
   }
   canvas.addEventListener('mousemove', mousemove)
   canvas.addEventListener('click', clickEvent)

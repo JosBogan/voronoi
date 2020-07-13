@@ -61,18 +61,24 @@ function init() {
       x: coords.x - shape.coords[0].x,
       y: coords.y - shape.coords[0].y
     }
+
+    const length = ((vector.x ** vector.x) + (vector.y ** vector.y)) ** 0.5
+
+    return length < 5
+    // if (length < 5) console.log('Inside')
+
   }
 
 
   function mousemove(event) {
-    if (shape.coords.length < 1) return
+    if (shape.coords.length < 1 || shape.complete === true) return
     const coords = getMouseCoords(event)
 
     shapeEdgeDraw(coords)
   }
 
   function clickEvent(event) {
-
+    if (shape.complete) return
     const coords = getMouseCoords(event)
 
 
@@ -80,7 +86,13 @@ function init() {
     // ctx.arc(coords.x, coords.y, 5, 0, 2 * Math.PI,)
     // ctx.fillStyle = 'black'
     // ctx.fill()
-
+    if (shape.coords.length >= 2) {
+      if (checkIfInCircle(coords)) {
+        shape.complete = true
+        drawShape()
+        return
+      }
+    }
     shape.coords.push(coords)
 
     drawShape()
